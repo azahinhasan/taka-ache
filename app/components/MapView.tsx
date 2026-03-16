@@ -10,9 +10,10 @@ interface MapViewProps {
   atmLocations: ATMLocation[];
   onATMClick: (atm: ATMLocation) => void;
   onLocationPinDrop?: (lat: number, lon: number) => void;
+  onRefreshATMs?: () => void;
 }
 
-export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop }: MapViewProps) {
+export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs }: MapViewProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
@@ -173,6 +174,9 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // Don't clear markers if atmLocations is empty (prevents disappearing markers)
+    if (atmLocations.length === 0) return;
+
     // Remove existing ATM markers
     atmMarkersRef.current.forEach(marker => marker.remove());
     atmMarkersRef.current = [];
@@ -246,6 +250,20 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
     }
     // Don't re-center on subsequent updates to preserve user's current view
   }, [atmLocations, userLocation]);
+
+  const handleRecenterToMyLocation = () => {
+    if (mapRef.current && userLocation) {
+      mapRef.current.setView([userLocation.lat, userLocation.lon], 15, {
+        animate: true,
+        duration: 1,
+      });
+      
+      // Fetch fresh ATM data at current location
+      if (onRefreshATMs) {
+        onRefreshATMs();
+      }
+    }
+  };
 
   return (
     <div className="relative w-full h-full">

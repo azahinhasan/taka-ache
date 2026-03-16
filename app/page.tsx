@@ -151,6 +151,26 @@ export default function Home() {
     }
   };
 
+  const handleRefreshATMs = async () => {
+    if (!userLocation) return;
+
+    setIsLoading(true);
+    setError(null);
+    setSelectedATM(null);
+
+    try {
+      const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
+      const atms = await fetchATMLocations(userLocation.lat, userLocation.lon, 1000, googleApiKey);
+      setAtmLocations(atms);
+      console.log(`✓ Refreshed ATMs at current location`);
+    } catch (err) {
+      console.error('Error refreshing ATMs:', err);
+      setError('Failed to refresh ATM locations. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <header className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg z-10">
@@ -175,6 +195,7 @@ export default function Home() {
             atmLocations={atmLocations}
             onATMClick={handleATMClick}
             onLocationPinDrop={handleLocationPinDrop}
+            onRefreshATMs={handleRefreshATMs}
           />
         )}
       </div>
@@ -183,6 +204,7 @@ export default function Home() {
       <LocationSearch 
         onSearch={handleCustomLocationSearch}
         isLoading={isLoading}
+        onMyLocation={handleRefreshATMs}
       />
 
       {/* Search ATMs at Pinned Location Button */}
