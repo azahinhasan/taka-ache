@@ -19,7 +19,7 @@ export function getCorsHeaders(origin: string | null): HeadersInit {
   };
 }
 
-export function handleCors(request: Request): NextResponse | null {
+export function handleCors(request: Request): Response | undefined {
   const origin = request.headers.get('origin');
   
   // Handle preflight OPTIONS request
@@ -30,7 +30,7 @@ export function handleCors(request: Request): NextResponse | null {
     });
   }
   
-  return null;
+  return undefined;
 }
 
 export function corsResponse(data: any, init?: ResponseInit): NextResponse {
