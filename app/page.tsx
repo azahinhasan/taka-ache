@@ -236,9 +236,9 @@ export default function Home() {
     <div className="relative w-screen h-screen overflow-hidden">
       <header className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg z-10">
         <div className="px-4 py-3 md:px-6 md:py-4">
-          <h1 className="text-xl md:text-2xl font-bold">Taka Ache?</h1>
+          <h1 className="text-xl md:text-2xl font-bold">টাকা আছে?</h1>
           <p className="text-xs md:text-sm text-emerald-100 mt-1">
-            Find nearby ATMs and current status
+            কাছাকাছি এটিএম খুঁজুন এবং বর্তমান অবস্থা দেখুন
           </p>
         </div>
       </header>
