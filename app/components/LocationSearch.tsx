@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { Language, getTranslation } from '../utils/translations';
 
 interface LocationSearchProps {
   onSearch: (lat: number, lon: number, locationName: string) => void;
   isLoading: boolean;
   onMyLocation?: () => void;
+  language: Language;
 }
 
-export default function LocationSearch({ onSearch, isLoading, onMyLocation }: LocationSearchProps) {
+export default function LocationSearch({ onSearch, isLoading, onMyLocation, language }: LocationSearchProps) {
+  const t = getTranslation(language);
   const [searchInput, setSearchInput] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +94,7 @@ export default function LocationSearch({ onSearch, isLoading, onMyLocation }: Lo
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Search location (e.g., Dhaka or 23.8103, 90.4125)"
+              placeholder={t.searchPlaceholder}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900"
               disabled={isLoading || isSearching}
             />
@@ -104,7 +107,8 @@ export default function LocationSearch({ onSearch, isLoading, onMyLocation }: Lo
             {isSearching ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span className="hidden sm:inline">Searching...</span>
+                <span className="hidden md:inline">{t.searching}</span>
+                <span className="md:hidden">📍</span>
               </>
             ) : (
               <>
@@ -119,7 +123,7 @@ export default function LocationSearch({ onSearch, isLoading, onMyLocation }: Lo
               onClick={onMyLocation}
               disabled={isLoading}
               className="px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 text-sm font-medium"
-              title="Go to my location"
+              title={t.myLocationButton}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -139,7 +143,7 @@ export default function LocationSearch({ onSearch, isLoading, onMyLocation }: Lo
         )}
 
         <div className="mt-2 text-xs text-gray-500">
-          <p>💡 Try: "Gulshan, Dhaka" or coordinates "23.8103, 90.4125"</p>
+          <p>💡 {t.searchExample}</p>
         </div>
       </div>
     </div>

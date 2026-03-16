@@ -6,6 +6,7 @@ import { ATMLocation, UserLocation } from "./types/atm";
 import { fetchATMLocations, getUserLocation } from "./utils/atmService";
 import Sidebar from "./components/Sidebar";
 import LocationSearch from "./components/LocationSearch";
+import { Language, getTranslation } from "./utils/translations";
 
 const MapView = dynamic(() => import("./components/MapView"), {
   ssr: false,
@@ -33,8 +34,10 @@ export default function Home() {
     lat: number;
     lon: number;
   } | null>(null);
+  const [language, setLanguage] = useState<Language>("en");
 
   const hasGoogleApiKey = !!process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
+  const t = getTranslation(language);
 
   useEffect(() => {
     requestLocationAndFetchATMs();
@@ -235,11 +238,24 @@ export default function Home() {
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <header className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg z-10">
-        <div className="px-4 py-3 md:px-6 md:py-4">
-          <h1 className="text-xl md:text-2xl font-bold">টাকা আছে?</h1>
-          <p className="text-xs md:text-sm text-emerald-100 mt-1">
-            কাছাকাছি এটিএম খুঁজুন এবং বর্তমান অবস্থা দেখুন
-          </p>
+        <div className="px-4 py-3 md:px-6 md:py-4 flex justify-between items-center">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold">{t.appTitle}</h1>
+            <p className="text-xs md:text-sm text-emerald-100 mt-1">
+              {t.appSubtitle}
+            </p>
+          </div>
+          <button
+            onClick={() => setLanguage(language === "en" ? "bn" : "en")}
+            className="bg-white/20 hover:bg-white/30 text-white font-semibold py-2 px-3 md:px-4 rounded-lg transition-colors text-xs md:text-sm flex items-center gap-1 md:gap-2"
+            title={language === "en" ? "Switch to Bangla" : "Switch to English"}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            <span className="hidden md:inline">{language === "en" ? "বাংলা" : "English"}</span>
+            <span className="md:hidden">{language === "en" ? "বাং" : "EN"}</span>
+          </button>
         </div>
       </header>
 
@@ -249,10 +265,10 @@ export default function Home() {
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
               <p className="text-gray-700 font-semibold">
-                Loading ATM locations...
+                {t.loadingMessage}
               </p>
               <p className="text-gray-500 text-sm mt-2">
-                Requesting location permission
+                {t.requestingLocation}
               </p>
             </div>
           </div>
@@ -263,6 +279,7 @@ export default function Home() {
             onATMClick={handleATMClick}
             onLocationPinDrop={handleLocationPinDrop}
             onRefreshATMs={handleRefreshATMs}
+            language={language}
           />
         )}
       </div>
@@ -272,6 +289,7 @@ export default function Home() {
         onSearch={handleCustomLocationSearch}
         isLoading={isLoading}
         onMyLocation={handleRefreshATMs}
+        language={language}
       />
 
       {!hasGoogleApiKey && showApiKeyInfo && (
@@ -290,17 +308,17 @@ export default function Home() {
             </svg>
             <div className="flex-1">
               <p className="text-sm font-semibold text-blue-900 mb-1">
-                Get More ATM Coverage!
+                {t.apiKeyTitle}
               </p>
               <p className="text-sm text-blue-800">
-                Add a free Google Places API key to see 5-10x more ATMs.
+                {t.apiKeyMessage}
                 <a
                   href="https://github.com/yourusername/taka-ache-frontned/blob/main/GOOGLE_PLACES_SETUP.md"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline font-semibold ml-1"
                 >
-                  Setup Guide
+                  {t.setupGuide}
                 </a>
               </p>
             </div>
@@ -341,7 +359,7 @@ export default function Home() {
                   onClick={retryLocationRequest}
                   className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-semibold"
                 >
-                  Retry
+                  {t.retryLocation}
                 </button>
               )}
             </div>
@@ -365,6 +383,7 @@ export default function Home() {
         selectedATM={selectedATM}
         userLocation={userLocation}
         onClose={handleCloseSidebar}
+        language={language}
       />
     </div>
   );

@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { ATMLocation, UserLocation } from '../types/atm';
+import { Language, getTranslation } from '../utils/translations';
 
 interface SidebarProps {
   selectedATM: ATMLocation | null;
   userLocation: UserLocation | null;
   onClose: () => void;
+  language: Language;
 }
 
-export default function Sidebar({ selectedATM, userLocation, onClose }: SidebarProps) {
+export default function Sidebar({ selectedATM, userLocation, onClose, language }: SidebarProps) {
+  const t = getTranslation(language);
   const [reviews, setReviews] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);

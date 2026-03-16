@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ATMLocation, UserLocation } from '../types/atm';
+import { Language, getTranslation } from '../utils/translations';
 
 interface MapViewProps {
   userLocation: UserLocation | null;
@@ -12,9 +13,11 @@ interface MapViewProps {
   onLocationPinDrop?: (lat: number, lon: number) => void;
   onRefreshATMs?: () => void;
   onRecenterMap?: () => void;
+  language: Language;
 }
 
-export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs, onRecenterMap }: MapViewProps) {
+export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs, onRecenterMap, language }: MapViewProps) {
+  const t = getTranslation(language);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
@@ -291,7 +294,7 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       {/* Loading indicator */}
       {atmLocations.length === 0 && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-lg shadow-lg z-[1000]">
-          <p className="text-sm text-gray-700">Loading ATM locations...</p>
+          <p className="text-sm text-gray-700">{t.loadingATMs}</p>
         </div>
       )}
 
@@ -299,7 +302,7 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       {atmLocations.length > 0 && (
         <div className="absolute top-4 left-4 bg-white px-4 py-2 rounded-lg shadow-lg z-[1000]">
           <p className="text-sm font-semibold text-gray-700">
-            {atmLocations.length} ATM{atmLocations.length !== 1 ? 's' : ''} found
+            {t.atmCount(atmLocations.length)}
           </p>
         </div>
       )}
