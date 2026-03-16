@@ -153,10 +153,10 @@ export default function Home() {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
-      <header className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg z-10">
+      <header className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg z-10">
         <div className="px-4 py-3 md:px-6 md:py-4">
           <h1 className="text-xl md:text-2xl font-bold">Taka Ache?</h1>
-          <p className="text-xs md:text-sm text-blue-100 mt-1">Find nearby ATMs on the map</p>
+          <p className="text-xs md:text-sm text-emerald-100 mt-1">Find nearby ATMs and current status</p>
         </div>
       </header>
 
