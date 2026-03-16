@@ -114,7 +114,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
       <div className="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto" style={{ zIndex: 9999 }}>
         {/* Header */}
         <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3 flex justify-between items-center shadow-md">
-          <h2 className="text-lg font-bold">ATM Details</h2>
+          <h2 className="text-lg font-bold">{t.atmDetails}</h2>
           <button 
             onClick={onClose}
             className="text-white hover:bg-blue-800 rounded-full p-2 transition-colors"
@@ -137,7 +137,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                   ? 'bg-blue-100 text-blue-700' 
                   : 'bg-green-100 text-green-700'
               }`}>
-                Powered by {selectedATM.source === 'google' ? '🗺️ Google Maps' : '🗺️ OpenStreetMap'}
+                {t.poweredBy} {selectedATM.source === 'google' ? '🗺️ Google Maps' : '🗺️ OpenStreetMap'}
               </span>
             </div>
           )}
@@ -146,7 +146,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
           {selectedATM.operator && (
             <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
               <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-                Operator
+                {t.operator}
               </h3>
               <p className="text-sm text-gray-900">
                 {selectedATM.operator}
@@ -158,7 +158,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
           {selectedATM.name && (
             <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
               <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-                Name
+                {t.name}
               </h3>
               <p className="text-sm text-gray-900">
                 {selectedATM.name}
@@ -170,7 +170,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
           {selectedATM.address && (
             <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
               <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-                Address
+                {t.address}
               </h3>
               <p className="text-sm text-gray-900">
                 {selectedATM.address}
@@ -181,7 +181,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
           {/* Coordinates */}
           <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
             <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-              Coordinates
+              {t.coordinates}
             </h3>
             <div className="space-y-0.5">
               <p className="text-xs text-gray-700">
@@ -201,18 +201,18 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
-            <span className="text-sm">Navigate with Google Maps</span>
+            <span className="text-sm">{t.navigateButton}</span>
           </button>
 
           {/* Reviews Section */}
           <div className="border-t border-gray-200 pt-3">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-gray-900">Reviews & Status</h3>
+              <h3 className="text-sm font-bold text-gray-900">{t.reviewsTitle}</h3>
               <button
                 onClick={() => setShowReviewForm(!showReviewForm)}
                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors"
               >
-                {showReviewForm ? 'Cancel' : 'Write Review'}
+                {showReviewForm ? t.cancel : t.writeReview}
               </button>
             </div>
 
@@ -221,15 +221,15 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-3 border border-blue-200">
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <p className="text-xs text-gray-600">Reviews</p>
+                    <p className="text-xs text-gray-600">{t.reviews}</p>
                     <p className="text-lg font-bold text-blue-600">{stats.totalReviews}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Cash</p>
+                    <p className="text-xs text-gray-600">{t.cash}</p>
                     <p className="text-sm font-semibold text-green-600">{stats.cashAvailableCount}/{stats.totalReviews}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Working</p>
+                    <p className="text-xs text-gray-600">{t.working}</p>
                     <p className="text-sm font-semibold text-green-600">{stats.workingCount}/{stats.totalReviews}</p>
                   </div>
                 </div>
@@ -245,35 +245,35 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   <div>
-                    <p className="text-xs font-semibold text-yellow-900 mb-1">Please Provide Accurate Information</p>
+                    <p className="text-xs font-semibold text-yellow-900 mb-1">{t.warningTitle}</p>
                     <p className="text-xs text-yellow-800">
-                      This is a helpful website to assist others in finding working ATMs. Please do not provide false or misleading information. Your honest review helps the community!
+                      {t.warningMessage}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Your Name</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">{t.yourName}</label>
                   <input
                     type="text"
                     required
                     value={formData.userName}
                     onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
                     className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
-                    placeholder="Enter your name"
+                    placeholder={t.namePlaceholder}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Working Status</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">{t.workingStatus}</label>
                   <select
                     value={formData.workingStatus}
                     onChange={(e) => setFormData({ ...formData, workingStatus: e.target.value as any })}
                     className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
                   >
-                    <option value="working">✅ Working</option>
-                    <option value="partially_working">⚠️ Partially Working</option>
-                    <option value="not_working">❌ Not Working</option>
+                    <option value="working">✅ {t.statusWorking}</option>
+                    <option value="partially_working">⚠️ {t.statusPartial}</option>
+                    <option value="not_working">❌ {t.statusNotWorking}</option>
                   </select>
                 </div>
 
@@ -285,12 +285,12 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                       onChange={(e) => setFormData({ ...formData, cashAvailable: e.target.checked })}
                       className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
                     />
-                    <span className="text-xs font-semibold text-gray-700">Cash Available</span>
+                    <span className="text-xs font-semibold text-gray-700">{t.cashAvailable}</span>
                   </label>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Comment</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">{t.comment}</label>
                   <textarea
                     required
                     value={formData.comment}
@@ -298,7 +298,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                     className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"
                     rows={2}
                     maxLength={500}
-                    placeholder="Share your experience..."
+                    placeholder={t.commentPlaceholder}
                   />
                   <p className="text-xs text-gray-500 mt-0.5">{formData.comment.length}/500</p>
                 </div>
@@ -308,7 +308,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                   disabled={isSubmitting}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Posting...' : 'Post Review'}
+                  {isSubmitting ? t.posting : t.postReview}
                 </button>
               </form>
             )}
@@ -318,11 +318,11 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
               {isLoadingReviews ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-sm text-gray-600 mt-2">Loading reviews...</p>
+                  <p className="text-sm text-gray-600 mt-2">{t.loadingATMs}</p>
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-600">No reviews within 48 hours!</p>
+                  <p className="text-sm text-gray-600">{t.noReviews}</p>
                 </div>
               ) : (
                 reviews.map((review) => (
@@ -340,12 +340,12 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                           review.workingStatus === 'not_working' ? 'bg-red-100 text-red-700' :
                           'bg-yellow-100 text-yellow-700'
                         }`}>
-                          {review.workingStatus === 'working' ? '✅ Working' :
-                           review.workingStatus === 'not_working' ? '❌ Not Working' :
-                           '⚠️ Partial'}
+                          {review.workingStatus === 'working' ? `✅ ${t.statusWorking}` :
+                           review.workingStatus === 'not_working' ? `❌ ${t.statusNotWorking}` :
+                           `⚠️ ${t.statusPartial}`}
                         </span>
                         {review.cashAvailable && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">💵 Cash OK</span>
+                          <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">💵 {t.cashAvailable}</span>
                         )}
                       </div>
                     </div>

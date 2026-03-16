@@ -109,17 +109,17 @@ export const translations = {
     yourName: 'আপনার নাম',
     namePlaceholder: 'আপনার নাম লিখুন',
     workingStatus: 'কার্যকর অবস্থা',
-    statusWorking: '✅ কার্যকর',
-    statusPartial: '⚠️ আংশিক কার্যকর',
-    statusNotWorking: '❌ কার্যকর নয়',
+    statusWorking: 'কার্যকর',
+    statusPartial: 'আংশিক কার্যকর',
+    statusNotWorking: 'কার্যকর নয়',
     cashAvailable: 'টাকা আছে',
     comment: 'মন্তব্য',
     commentPlaceholder: 'আপনার অভিজ্ঞতা শেয়ার করুন...',
     postReview: 'রিভিউ পোস্ট করুন',
-    posting: 'পোস্ট হচ্ছে...',
+    posting: 'পোস্ট করা হচ্ছে...',
     
     // Review List
-    noReviews: 'এখনও কোন রিভিউ নেই। প্রথম রিভিউ করুন!',
+    noReviews: 'এখনও কোনো রিভিউ নেই। প্রথম রিভিউ করুন!',
     
     // Loading
     loadingMessage: 'এটিএম অবস্থান লোড হচ্ছে...',
