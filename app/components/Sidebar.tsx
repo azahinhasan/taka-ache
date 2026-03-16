@@ -135,7 +135,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose }: SidebarP
                   ? 'bg-blue-100 text-blue-700' 
                   : 'bg-green-100 text-green-700'
               }`}>
-                {selectedATM.source === 'google' ? '🗺️ Google Maps' : '🗺️ OpenStreetMap'}
+                Powered by {selectedATM.source === 'google' ? '🗺️ Google Maps' : '🗺️ OpenStreetMap'}
               </span>
             </div>
           )}
@@ -307,7 +307,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose }: SidebarP
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-600">No reviews yet. Be the first!</p>
+                  <p className="text-sm text-gray-600">No reviews within 48 hours!</p>
                 </div>
               ) : (
                 reviews.map((review) => (
@@ -316,7 +316,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose }: SidebarP
                       <div>
                         <p className="text-sm font-semibold text-gray-900">{review.userName}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          {new Date(review.createdAt).toLocaleDateString()}
+                          {new Date(review.createdAt).toLocaleString()}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1">

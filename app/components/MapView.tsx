@@ -152,13 +152,16 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       iconAnchor: [20, 20],
     });
 
-    // Add user marker
+    // Add user marker with high z-index to ensure visibility
     const marker = L.marker([userLocation.lat, userLocation.lon], {
       icon: userIcon,
+      zIndexOffset: 500,
     }).addTo(mapRef.current);
 
     marker.bindPopup('<b>Your Location</b>');
     userMarkerRef.current = marker;
+
+    console.log('User marker created at:', userLocation.lat, userLocation.lon);
 
     // Only center on first load, not when user location updates
     if (!boundsSetRef.current) {
@@ -240,10 +243,8 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       bounds.extend([userLocation.lat, userLocation.lon]);
       mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
       boundsSetRef.current = true;
-    } else if (atmLocations.length > 0 && userLocation) {
-      // On subsequent searches, just center on user location without zooming out
-      mapRef.current.setView([userLocation.lat, userLocation.lon], mapRef.current.getZoom());
     }
+    // Don't re-center on subsequent updates to preserve user's current view
   }, [atmLocations, userLocation]);
 
   return (

@@ -25,7 +25,14 @@ export async function GET(request: NextRequest) {
 
     await connectDB();
 
-    const reviews = await ATMReview.find({ atmId })
+    // Calculate timestamp for 48 hours ago
+    const fortyEightHoursAgo = new Date();
+    fortyEightHoursAgo.setHours(fortyEightHoursAgo.getHours() - 48);
+
+    const reviews = await ATMReview.find({ 
+      atmId,
+      createdAt: { $gte: fortyEightHoursAgo }
+    })
       .sort({ createdAt: -1 })
       .limit(50)
       .lean();
