@@ -190,8 +190,11 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       atmLocations.length !== prevAtmLocationsRef.current.length ||
       atmLocations.some((atm, idx) => atm.id !== prevAtmLocationsRef.current[idx]?.id);
 
-    if (!hasChanged) {
-      console.log('Skipping marker update - atmLocations content unchanged');
+    // Also check if markers are already created (for React Strict Mode double render)
+    const markersAlreadyExist = atmMarkersRef.current.length === atmLocations.length;
+
+    if (!hasChanged && markersAlreadyExist) {
+      console.log('Skipping marker update - atmLocations content unchanged and markers exist');
       return;
     }
 
