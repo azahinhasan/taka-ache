@@ -1,4 +1,4 @@
-# ATM Locator Bangladesh 🏧
+# Taka Ache? 🏧
 
 A mobile-responsive web application that helps users find nearby ATM booths in Bangladesh using an interactive map powered by Leaflet.js and OpenStreetMap.
 

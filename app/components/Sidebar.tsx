@@ -128,9 +128,20 @@ export default function Sidebar({ selectedATM, userLocation, onClose }: SidebarP
         <div className="p-6 space-y-6">
           {/* ATM ID */}
           <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">
-              ATM Identifier
-            </h3>
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                ATM Identifier
+              </h3>
+              {selectedATM.source && (
+                <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                  selectedATM.source === 'google' 
+                    ? 'bg-blue-100 text-blue-700' 
+                    : 'bg-green-100 text-green-700'
+                }`}>
+                  {selectedATM.source === 'google' ? '🗺️ Google Maps' : '🗺️ OpenStreetMap'}
+                </span>
+              )}
+            </div>
             <p className="text-lg font-mono text-gray-900 break-all">
               {selectedATM.id}
             </p>

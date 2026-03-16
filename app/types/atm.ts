@@ -7,6 +7,7 @@ export interface ATMLocation {
   name?: string;
   operator?: string;
   address?: string;
+  source?: 'google' | 'openstreetmap';
 }
 
 export interface UserLocation {

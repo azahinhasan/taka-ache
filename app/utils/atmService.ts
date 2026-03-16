@@ -16,40 +16,9 @@ async function fetchFromOverpass(
   radius: number = 1000
 ): Promise<ATMLocation[]> {
   try {
-    // Calculate bounding box (approximate)
-    const latOffset = radius / 111000; // 1 degree latitude ≈ 111km
-    const lonOffset = radius / (111000 * Math.cos(lat * Math.PI / 180));
-
-    const south = lat - latOffset;
-    const north = lat + latOffset;
-    const west = lon - lonOffset;
-    const east = lon + lonOffset;
-
-    // Enhanced Overpass API query
-    // Searches for: ATMs, banks (which usually have ATMs), and financial institutions
-    const query = `
-      [out:json][timeout:25];
-      (
-        node["amenity"="atm"](${south},${west},${north},${east});
-        way["amenity"="atm"](${south},${west},${north},${east});
-        relation["amenity"="atm"](${south},${west},${north},${east});
-        node["amenity"="bank"]["atm"="yes"](${south},${west},${north},${east});
-        way["amenity"="bank"]["atm"="yes"](${south},${west},${north},${east});
-        node["amenity"="bank"](${south},${west},${north},${east});
-        way["amenity"="bank"](${south},${west},${north},${east});
-      );
-      out center;
-    `;
-
-    const overpassUrl = 'https://overpass-api.de/api/interpreter';
-    
-    const response = await fetch(overpassUrl, {
-      method: 'POST',
-      body: query,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+    // Use backend API route to hide external URL
+    const url = `/api/overpass?lat=${lat}&lon=${lon}&radius=${radius}`;
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Overpass API error: ${response.status}`);
@@ -83,6 +52,7 @@ async function fetchFromOverpass(
         name: element.tags?.name || (isBank ? 'Bank Branch' : undefined),
         operator: element.tags?.operator || element.tags?.brand,
         address: address || undefined,
+        source: 'openstreetmap',
       };
     });
 
@@ -130,6 +100,7 @@ async function fetchFromGooglePlaces(
       name: place.name,
       operator: place.name,
       address: place.vicinity,
+      source: 'google',
     }));
   } catch (error) {
     console.error('Error fetching from Google Places:', error);
@@ -156,17 +127,13 @@ export async function fetchATMLocations(
     let googleResults: ATMLocation[] = [];
     let overpassResults: ATMLocation[] = [];
 
-    // Primary: Try Google Places API first if API key is configured on server
-    if (googleApiKey) {
-      try {
-        googleResults = await fetchFromGooglePlaces(lat, lon, radius);
-        results.push(...googleResults);
-        console.log(`✓ Google Places API: Found ${googleResults.length} ATMs`);
-      } catch (error) {
-        console.warn('Google Places API failed, falling back to OpenStreetMap:', error);
-      }
-    } else {
-      console.warn('⚠️ No Google Places API key provided. Add GOOGLE_PLACES_API_KEY to .env.local for better coverage.');
+    // Primary: Always try Google Places API first (backend will check for API key)
+    try {
+      googleResults = await fetchFromGooglePlaces(lat, lon, radius);
+      results.push(...googleResults);
+      console.log(`✓ Google Places API: Found ${googleResults.length} ATMs`);
+    } catch (error) {
+      console.warn('Google Places API failed, falling back to OpenStreetMap:', error);
     }
 
     // Fallback: Only use OpenStreetMap if Google Places failed or returned no results

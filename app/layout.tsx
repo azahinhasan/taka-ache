@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ATM Locator Bangladesh",
+  title: "Taka Ache?",
   description: "Find nearby ATM booths in Bangladesh using interactive map",
 };
 
