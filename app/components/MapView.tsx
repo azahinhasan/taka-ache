@@ -9,14 +9,16 @@ interface MapViewProps {
   userLocation: UserLocation | null;
   atmLocations: ATMLocation[];
   onATMClick: (atm: ATMLocation) => void;
+  onLocationPinDrop?: (lat: number, lon: number) => void;
 }
 
-export default function MapView({ userLocation, atmLocations, onATMClick }: MapViewProps) {
+export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop }: MapViewProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
   const atmMarkersRef = useRef<L.Marker[]>([]);
   const boundsSetRef = useRef<boolean>(false);
+  const customPinRef = useRef<L.Marker | null>(null);
 
   // Initialize map
   useEffect(() => {
@@ -35,6 +37,64 @@ export default function MapView({ userLocation, atmLocations, onATMClick }: MapV
       maxZoom: 19,
     }).addTo(map);
 
+    // Add click event to drop custom location pin
+    map.on('click', (e) => {
+      if (onLocationPinDrop) {
+        const { lat, lng } = e.latlng;
+        
+        // Remove existing custom pin
+        if (customPinRef.current) {
+          customPinRef.current.remove();
+        }
+
+        // Create draggable custom pin
+        const customIcon = L.divIcon({
+          className: 'custom-pin-marker',
+          html: `
+            <div style="position: relative;">
+              <div style="
+                width: 30px;
+                height: 30px;
+                background-color: #ef4444;
+                border: 3px solid white;
+                border-radius: 50% 50% 50% 0;
+                transform: rotate(-45deg);
+                box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+              "></div>
+              <div style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(45deg);
+                width: 10px;
+                height: 10px;
+                background-color: white;
+                border-radius: 50%;
+              "></div>
+            </div>
+          `,
+          iconSize: [30, 30],
+          iconAnchor: [15, 30],
+        });
+
+        const customPin = L.marker([lat, lng], {
+          icon: customIcon,
+          draggable: true,
+        }).addTo(map);
+
+        customPin.bindPopup('<b>Custom Location</b><br/>Drag to adjust or click "Search ATMs Here"');
+
+        // Handle drag end
+        customPin.on('dragend', () => {
+          const position = customPin.getLatLng();
+          onLocationPinDrop(position.lat, position.lng);
+        });
+
+        customPinRef.current = customPin;
+        onLocationPinDrop(lat, lng);
+      }
+    });
+
     mapRef.current = map;
 
     // Cleanup on unmount
@@ -44,14 +104,20 @@ export default function MapView({ userLocation, atmLocations, onATMClick }: MapV
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [onLocationPinDrop]);
 
   // Update user location marker
   useEffect(() => {
     if (!mapRef.current || !userLocation) return;
 
-    // Remove existing user marker
+    // Check if marker exists and location hasn't changed
     if (userMarkerRef.current) {
+      const currentPos = userMarkerRef.current.getLatLng();
+      if (currentPos.lat === userLocation.lat && currentPos.lng === userLocation.lon) {
+        // Location hasn't changed, don't recreate marker
+        return;
+      }
+      // Location changed, remove old marker
       userMarkerRef.current.remove();
     }
 
@@ -90,11 +156,13 @@ export default function MapView({ userLocation, atmLocations, onATMClick }: MapV
       icon: userIcon,
     }).addTo(mapRef.current);
 
-    marker.bindPopup('<b>Your Location</b>').openPopup();
+    marker.bindPopup('<b>Your Location</b>');
     userMarkerRef.current = marker;
 
-    // Center map on user location
-    mapRef.current.setView([userLocation.lat, userLocation.lon], 14);
+    // Only center on first load, not when user location updates
+    if (!boundsSetRef.current) {
+      mapRef.current.setView([userLocation.lat, userLocation.lon], 14);
+    }
   }, [userLocation]);
 
   // Update ATM markers
@@ -162,14 +230,18 @@ export default function MapView({ userLocation, atmLocations, onATMClick }: MapV
       atmMarkersRef.current.push(marker);
     });
 
-    // Fit bounds to show all ATMs only once when first loaded
+    // Only fit bounds on initial load, not on subsequent searches
+    // This prevents auto zoom-out when clicking ATMs after searching
     if (atmLocations.length > 0 && userLocation && !boundsSetRef.current) {
       const bounds = L.latLngBounds(
         atmLocations.map(atm => [atm.lat, atm.lon])
       );
       bounds.extend([userLocation.lat, userLocation.lon]);
-      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
       boundsSetRef.current = true;
+    } else if (atmLocations.length > 0 && userLocation) {
+      // On subsequent searches, just center on user location without zooming out
+      mapRef.current.setView([userLocation.lat, userLocation.lon], mapRef.current.getZoom());
     }
   }, [atmLocations, userLocation]);
 

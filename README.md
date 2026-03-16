@@ -55,25 +55,32 @@ pnpm dev
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-### Optional: Enhanced ATM Coverage with Google Places API
+### Recommended: Add Google Places API for Best Coverage
 
-For **significantly better ATM coverage**, add Google Places API integration:
+The app uses **Google Places API** as the primary data source for comprehensive ATM coverage, with OpenStreetMap as a fallback.
 
-1. Copy the example environment file:
+**Quick Setup (5 minutes):**
+
+1. Get a **free** Google Places API key:
+   - Visit [Google Cloud Console](https://console.cloud.google.com/)
+   - Create project → Enable "Places API (New)" → Create API key
+   - **Free tier**: $200/month credit (~28,000 requests)
+
+2. Create `.env.local` in project root:
    ```bash
-   cp env.example .env.local
-   ```
-
-2. Get a free Google Places API key (see [GOOGLE_PLACES_SETUP.md](./GOOGLE_PLACES_SETUP.md))
-
-3. Add your API key to `.env.local`:
-   ```env
    NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_api_key_here
    ```
 
-4. Restart the development server
+3. Restart the server:
+   ```bash
+   npm run dev
+   ```
 
-**Note**: This is optional. The app works without it using enhanced OpenStreetMap data, but Google Places provides much better coverage.
+**Result**: 5-10x more ATM locations!
+
+📖 **Detailed guide**: [SETUP_API_KEY.md](./SETUP_API_KEY.md) | [Full setup](./GOOGLE_PLACES_SETUP.md)
+
+**Without API key**: App still works using OpenStreetMap (limited coverage)
 
 ## 🏗️ Project Structure
 
@@ -113,18 +120,20 @@ taka-ache-frontned/
 The app requests browser geolocation permission on load. If granted, it centers the map on the user's current location. If denied or unavailable, it defaults to Dhaka, Bangladesh.
 
 ### 2. ATM Data Fetching
-The app uses a **multi-source approach** for comprehensive ATM coverage:
+The app uses a **dual-source approach** with intelligent fallback:
 
-**OpenStreetMap (via Overpass API)** - Always enabled, searches for:
-- Standalone ATMs (`amenity=atm`)
-- Bank branches (`amenity=bank`)
-- Banks with confirmed ATMs (`amenity=bank` + `atm=yes`)
+**Primary: Google Places API** (Recommended)
+- Most comprehensive ATM database
+- Excellent coverage in Bangladesh
+- Real-time business information
+- Requires free API key (5-minute setup)
+- ~$0 cost for personal use (within free tier)
 
-**Google Places API** - Optional, provides:
-- More comprehensive ATM database
-- Better coverage in Bangladesh
-- More accurate business information
-- Requires free API key (see setup guide)
+**Fallback: OpenStreetMap (via Overpass API)** - Always available
+- Free, no API key required
+- Searches for ATMs, banks, and financial institutions
+- Limited coverage compared to Google
+- Used when Google API key is not configured or fails
 
 The app automatically **deduplicates** results from both sources, removing ATMs within 50 meters of each other.
 
@@ -150,7 +159,7 @@ The "Navigate with Google Maps" button opens Google Maps with directions from th
 ### Adjusting Search Radius
 Edit the radius parameter in `app/page.tsx`:
 ```typescript
-const atms = await fetchATMLocations(location.lat, location.lon, 5000); // 5000 meters = 5km
+const atms = await fetchATMLocations(location.lat, location.lon, 1000); // 1000 meters = 5km
 ```
 
 ### Changing Default Location

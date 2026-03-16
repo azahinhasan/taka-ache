@@ -7,13 +7,13 @@ import { ATMLocation, OverpassResponse } from '../types/atm';
  * Includes ATMs, banks, and financial institutions
  * @param lat - Center latitude
  * @param lon - Center longitude
- * @param radius - Search radius in meters (default: 5000m = 5km)
+ * @param radius - Search radius in meters (default: 1000m = 5km)
  * @returns Array of ATM locations
  */
 async function fetchFromOverpass(
   lat: number,
   lon: number,
-  radius: number = 5000
+  radius: number = 1000
 ): Promise<ATMLocation[]> {
   try {
     // Calculate bounding box (approximate)
@@ -94,26 +94,27 @@ async function fetchFromOverpass(
 }
 
 /**
- * Fetches ATM locations from Google Places API (requires API key)
+ * Fetches ATM locations from Google Places API via our Next.js API route
+ * This avoids CORS issues by proxying the request through our backend
  * @param lat - Center latitude
  * @param lon - Center longitude
  * @param radius - Search radius in meters
- * @param apiKey - Google Places API key
  * @returns Array of ATM locations
  */
 async function fetchFromGooglePlaces(
   lat: number,
   lon: number,
-  radius: number,
-  apiKey: string
+  radius: number
 ): Promise<ATMLocation[]> {
   try {
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=${radius}&type=atm&key=${apiKey}`;
+    // Call our Next.js API route instead of Google directly (avoids CORS)
+    const url = `/api/atm?lat=${lat}&lon=${lon}&radius=${radius}`;
     
     const response = await fetch(url);
     
     if (!response.ok) {
-      throw new Error(`Google Places API error: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(`API error: ${errorData.error || response.status}`);
     }
 
     const data = await response.json();
@@ -137,36 +138,59 @@ async function fetchFromGooglePlaces(
 }
 
 /**
- * Main function to fetch ATM locations from multiple sources
+ * Main function to fetch ATM locations - prioritizes Google Places API
  * @param lat - Center latitude
  * @param lon - Center longitude
- * @param radius - Search radius in meters (default: 5000m = 5km)
- * @param googleApiKey - Optional Google Places API key for enhanced results
- * @returns Array of ATM locations from all sources
+ * @param radius - Search radius in meters (default: 1000m = 5km)
+ * @param googleApiKey - Google Places API key (required for best results)
+ * @returns Array of ATM locations
  */
 export async function fetchATMLocations(
   lat: number,
   lon: number,
-  radius: number = 5000,
+  radius: number = 1000,
   googleApiKey?: string
 ): Promise<ATMLocation[]> {
   try {
-    const results: ATMLocation[] = [];
+    let results: ATMLocation[] = [];
+    let googleResults: ATMLocation[] = [];
+    let overpassResults: ATMLocation[] = [];
 
-    // Fetch from Overpass (always free)
-    const overpassResults = await fetchFromOverpass(lat, lon, radius);
-    results.push(...overpassResults);
-
-    // Fetch from Google Places if API key is provided
+    // Primary: Try Google Places API first if API key is configured on server
     if (googleApiKey) {
-      const googleResults = await fetchFromGooglePlaces(lat, lon, radius, googleApiKey);
-      results.push(...googleResults);
+      try {
+        googleResults = await fetchFromGooglePlaces(lat, lon, radius);
+        results.push(...googleResults);
+        console.log(`✓ Google Places API: Found ${googleResults.length} ATMs`);
+      } catch (error) {
+        console.warn('Google Places API failed, falling back to OpenStreetMap:', error);
+      }
+    } else {
+      console.warn('⚠️ No Google Places API key provided. Add GOOGLE_PLACES_API_KEY to .env.local for better coverage.');
+    }
+
+    // Fallback: Only use OpenStreetMap if Google Places failed or returned no results
+    if (googleResults.length === 0) {
+      try {
+        overpassResults = await fetchFromOverpass(lat, lon, radius);
+        results.push(...overpassResults);
+        console.log(`✓ OpenStreetMap (fallback): Found ${overpassResults.length} ATMs/Banks`);
+      } catch (error) {
+        console.error('OpenStreetMap API also failed:', error);
+        throw new Error('Both Google Places and OpenStreetMap APIs failed');
+      }
+    } else {
+      console.log(`ℹ️ Skipping OpenStreetMap - using Google Places data only`);
     }
 
     // Remove duplicates based on proximity (within 50 meters)
     const uniqueResults = removeDuplicates(results, 50);
 
-    console.log(`Found ${uniqueResults.length} ATM locations (${overpassResults.length} from OSM${googleApiKey ? `, ${results.length - overpassResults.length} from Google` : ''})`);
+    console.log(`📍 Total unique ATM locations: ${uniqueResults.length} (${googleResults.length} from Google, ${overpassResults.length} from OSM, ${results.length - uniqueResults.length} duplicates removed)`);
+
+    if (uniqueResults.length === 0) {
+      throw new Error('No ATM locations found in this area');
+    }
 
     return uniqueResults;
   } catch (error) {
