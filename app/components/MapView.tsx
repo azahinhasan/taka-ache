@@ -51,7 +51,7 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
         const customIcon = L.divIcon({
           className: 'custom-pin-marker',
           html: `
-            <div style="position: relative;">
+            <div style="position: relative; z-index: 1000;">
               <div style="
                 width: 30px;
                 height: 30px;
@@ -80,6 +80,7 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
         const customPin = L.marker([lat, lng], {
           icon: customIcon,
           draggable: true,
+          zIndexOffset: 1000,
         }).addTo(map);
 
         customPin.bindPopup('<b>Custom Location</b><br/>Drag to adjust or click "Search ATMs Here"');
