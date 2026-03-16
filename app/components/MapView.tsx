@@ -11,9 +11,10 @@ interface MapViewProps {
   onATMClick: (atm: ATMLocation) => void;
   onLocationPinDrop?: (lat: number, lon: number) => void;
   onRefreshATMs?: () => void;
+  onRecenterMap?: () => void;
 }
 
-export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs }: MapViewProps) {
+export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs, onRecenterMap }: MapViewProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
@@ -263,23 +264,26 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
     // Don't re-center on subsequent updates to preserve user's current view
   }, [atmLocations]);
 
-  const handleRecenterToMyLocation = () => {
-    if (mapRef.current && userLocation) {
-      mapRef.current.setView([userLocation.lat, userLocation.lon], 15, {
-        animate: true,
-        duration: 1,
-      });
-      
-      // Fetch fresh ATM data at current location
-      if (onRefreshATMs) {
-        onRefreshATMs();
-      }
+  // Expose recenter function via callback
+  useEffect(() => {
+    if (onRecenterMap && mapRef.current && userLocation) {
+      // This allows parent to trigger recentering
+      const recenter = () => {
+        if (mapRef.current && userLocation) {
+          mapRef.current.setView([userLocation.lat, userLocation.lon], 15, {
+            animate: true,
+            duration: 1,
+          });
+        }
+      };
+      // Store the function so parent can call it
+      (window as any).__mapRecenter = recenter;
     }
-  };
+  }, [userLocation, onRecenterMap]);
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainerRef} className="w-full h-full" />
+      <div ref={mapContainerRef} className="w-full h-full cursor-crosshair" />
       
       {/* Loading indicator */}
       {atmLocations.length === 0 && (
