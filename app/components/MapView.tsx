@@ -20,6 +20,7 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
   const atmMarkersRef = useRef<L.Marker[]>([]);
   const boundsSetRef = useRef<boolean>(false);
   const customPinRef = useRef<L.Marker | null>(null);
+  const prevAtmLocationsRef = useRef<ATMLocation[]>([]);
 
   // Initialize map
   useEffect(() => {
@@ -174,8 +175,26 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
   useEffect(() => {
     if (!mapRef.current) return;
 
+    console.log('ATM markers useEffect triggered. atmLocations.length:', atmLocations.length);
+
     // Don't clear markers if atmLocations is empty (prevents disappearing markers)
-    if (atmLocations.length === 0) return;
+    if (atmLocations.length === 0) {
+      console.log('Skipping marker update - atmLocations is empty');
+      return;
+    }
+
+    // Check if atmLocations actually changed (not just reference)
+    // Always create markers if this is the first time (prevAtmLocationsRef is empty)
+    const hasChanged = prevAtmLocationsRef.current.length === 0 ||
+      atmLocations.length !== prevAtmLocationsRef.current.length ||
+      atmLocations.some((atm, idx) => atm.id !== prevAtmLocationsRef.current[idx]?.id);
+
+    if (!hasChanged) {
+      console.log('Skipping marker update - atmLocations content unchanged');
+      return;
+    }
+
+    console.log('Clearing and recreating', atmLocations.length, 'ATM markers');
 
     // Remove existing ATM markers
     atmMarkersRef.current.forEach(marker => marker.remove());
@@ -184,33 +203,19 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
     // Create custom icon for ATM locations
     const atmIcon = L.divIcon({
       className: 'custom-atm-marker',
-      html: `
-        <div style="
-          width: 32px;
-          height: 32px;
-          background-color: #10b981;
-          border: 2px solid white;
-          border-radius: 50%;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          color: white;
-          font-size: 14px;
-        ">
-          $
-        </div>
-      `,
+      html: `<div style="width: 32px; height: 32px; background-color: #10b981; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px;">$</div>`,
       iconSize: [32, 32],
       iconAnchor: [16, 16],
     });
 
     // Add ATM markers
-    atmLocations.forEach(atm => {
+    atmLocations.forEach((atm, index) => {
       const marker = L.marker([atm.lat, atm.lon], {
         icon: atmIcon,
+        zIndexOffset: 100,
       }).addTo(mapRef.current!);
+
+      console.log(`Created marker ${index + 1}/${atmLocations.length} at [${atm.lat}, ${atm.lon}]`);
 
       // Create popup content
       const popupContent = `
@@ -238,6 +243,13 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       atmMarkersRef.current.push(marker);
     });
 
+    console.log(`Total markers in atmMarkersRef: ${atmMarkersRef.current.length}`);
+
+    // Update the previous reference AFTER markers are created
+    // This prevents React Strict Mode double-render from skipping marker creation
+    prevAtmLocationsRef.current = atmLocations;
+    console.log('Markers created and reference updated');
+
     // Only fit bounds on initial load, not on subsequent searches
     // This prevents auto zoom-out when clicking ATMs after searching
     if (atmLocations.length > 0 && userLocation && !boundsSetRef.current) {
@@ -249,7 +261,7 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
       boundsSetRef.current = true;
     }
     // Don't re-center on subsequent updates to preserve user's current view
-  }, [atmLocations, userLocation]);
+  }, [atmLocations]);
 
   const handleRecenterToMyLocation = () => {
     if (mapRef.current && userLocation) {
