@@ -43,6 +43,20 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
       maxZoom: 19,
     }).addTo(map);
 
+    // Set custom cursor to pin icon by default
+    map.getContainer().style.cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23ef4444' stroke='white' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3' fill='white'/%3E%3C/svg%3E") 12 24, crosshair`;
+
+    // Change cursor to grabbing hand when panning
+    map.on('mousedown', (e) => {
+      if (e.originalEvent.button === 2 || e.originalEvent.buttons === 1) {
+        map.getContainer().style.cursor = 'grabbing';
+      }
+    });
+
+    map.on('mouseup', () => {
+      map.getContainer().style.cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23ef4444' stroke='white' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3' fill='white'/%3E%3C/svg%3E") 12 24, crosshair`;
+    });
+
     // Add click event to drop custom location pin
     map.on('click', (e) => {
       if (onLocationPinDrop) {
