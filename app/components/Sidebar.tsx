@@ -22,7 +22,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
     userName: '',
     comment: '',
     cashAvailable: true,
-    workingStatus: 'working' as 'working' | 'not_working' | 'partially_working'
+    workingStatus: 'working' as 'working' | 'not_working' | 'partially_working' | 'accepting_own_bank'
   });
 
   // Fetch reviews when ATM is selected
@@ -286,6 +286,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                     <option value="working">✅ {t.statusWorking}</option>
                     <option value="partially_working">⚠️ {t.statusPartial}</option>
                     <option value="not_working">❌ {t.statusNotWorking}</option>
+                    <option value="accepting_own_bank">🏦 {t.accptingOwnBank}</option>
                   </select>
                 </div>
 
@@ -350,10 +351,12 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           review.workingStatus === 'working' ? 'bg-green-100 text-green-700' :
                           review.workingStatus === 'not_working' ? 'bg-red-100 text-red-700' :
+                          review.workingStatus === 'accepting_own_bank' ? 'bg-purple-100 text-purple-700' :
                           'bg-yellow-100 text-yellow-700'
                         }`}>
                           {review.workingStatus === 'working' ? `✅ ${t.statusWorking}` :
                            review.workingStatus === 'not_working' ? `❌ ${t.statusNotWorking}` :
+                           review.workingStatus === 'accepting_own_bank' ? `🏦 ${t.accptingOwnBank}` :
                            `⚠️ ${t.statusPartial}`}
                         </span>
                         {review.cashAvailable && (

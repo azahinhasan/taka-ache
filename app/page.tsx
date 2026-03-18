@@ -291,7 +291,7 @@ export default function Home() {
         onMyLocation={handleRefreshATMs}
         language={language}
       />
-
+{/* 
       {!hasGoogleApiKey && showApiKeyInfo && (
         <div className="absolute top-[88px] md:top-[96px] left-4 right-4 md:left-auto md:right-4 md:w-96 bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-lg z-20">
           <div className="flex items-start">
@@ -336,7 +336,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {error && (
         <div className="absolute top-[88px] md:top-[96px] left-4 right-4 md:left-auto md:right-4 md:w-96 bg-yellow-50 border border-yellow-200 rounded-lg p-4 shadow-lg z-20">

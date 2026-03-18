@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!['working', 'not_working', 'partially_working'].includes(workingStatus)) {
+    if (!['working', 'not_working', 'partially_working', 'accepting_own_bank'].includes(workingStatus)) {
       return NextResponse.json(
-        { error: 'Invalid working status. Must be: working, not_working, or partially_working' },
+        { error: 'Invalid working status. Must be: working, not_working, partially_working, or accepting_own_bank' },
         { status: 400, headers: corsHeaders }
       );
     }
