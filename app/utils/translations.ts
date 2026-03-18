@@ -39,9 +39,10 @@ export const translations = {
     yourName: 'Your Name',
     namePlaceholder: 'Enter your name',
     workingStatus: 'Working Status',
-    statusWorking: '✅ Working',
-    statusPartial: '⚠️ Partially Working',
-    statusNotWorking: '❌ Not Working',
+    statusWorking: 'Working',
+    statusPartial: 'Partially Working',
+    statusNotWorking: 'Not Working',
+    accptingOwnBank: 'Accepting Own Bank',
     cashAvailable: 'Cash Available',
     comment: 'Comment',
     commentPlaceholder: 'Share your experience...',
@@ -50,6 +51,7 @@ export const translations = {
     
     // Review List
     noReviews: 'No reviews yet. Be the first to review!',
+    last48HoursNote: 'ℹShowing reviews from the last 48 hours only',
     
     // Loading
     loadingMessage: 'Loading ATM locations...',
@@ -112,6 +114,7 @@ export const translations = {
     statusWorking: 'কার্যকর',
     statusPartial: 'আংশিক কার্যকর',
     statusNotWorking: 'কার্যকর নয়',
+    accptingOwnBank: 'নিজের ব্যাংক গ্রহণ করছে',
     cashAvailable: 'টাকা আছে',
     comment: 'মন্তব্য',
     commentPlaceholder: 'আপনার অভিজ্ঞতা শেয়ার করুন...',
@@ -120,6 +123,7 @@ export const translations = {
     
     // Review List
     noReviews: 'এখনও কোনো রিভিউ নেই। প্রথম রিভিউ করুন!',
+    last48HoursNote: 'শুধুমাত্র গত ৪৮ ঘন্টার রিভিউ দেখানো হচ্ছে',
     
     // Loading
     loadingMessage: 'এটিএম অবস্থান লোড হচ্ছে...',
