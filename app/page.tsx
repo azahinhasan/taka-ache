@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { ATMLocation, UserLocation } from "./types/atm";
 import { fetchATMLocations, getUserLocation } from "./utils/atmService";
@@ -112,19 +112,19 @@ export default function Home() {
     }
   };
 
-  const handleATMClick = (atm: ATMLocation) => {
+  const handleATMClick = useCallback((atm: ATMLocation) => {
     setSelectedATM(atm);
-  };
+  }, []);
 
-  const handleCloseSidebar = () => {
+  const handleCloseSidebar = useCallback(() => {
     setSelectedATM(null);
-  };
+  }, []);
 
-  const retryLocationRequest = () => {
+  const retryLocationRequest = useCallback(() => {
     requestLocationAndFetchATMs();
-  };
+  }, []);
 
-  const handleCustomLocationSearch = async (
+  const handleCustomLocationSearch = useCallback(async (
     lat: number,
     lon: number,
     locationName: string,
@@ -151,13 +151,13 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleLocationPinDrop = (lat: number, lon: number) => {
+  const handleLocationPinDrop = useCallback((lat: number, lon: number) => {
     setPinnedLocation({ lat, lon });
-  };
+  }, []);
 
-  const searchATMsAtPinnedLocation = async () => {
+  const searchATMsAtPinnedLocation = useCallback(async () => {
     if (!pinnedLocation) return;
 
     setIsLoading(true);
@@ -188,9 +188,9 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [pinnedLocation]);
 
-  const handleRefreshATMs = async () => {
+  const handleRefreshATMs = useCallback(async () => {
     if (!userLocation) return;
 
     setIsLoading(true);
@@ -229,7 +229,7 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userLocation]);
 
   useEffect(() => {
     searchATMsAtPinnedLocation();

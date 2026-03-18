@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ATMLocation, UserLocation } from '../types/atm';
@@ -16,7 +16,7 @@ interface MapViewProps {
   language: Language;
 }
 
-export default function MapView({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs, onRecenterMap, language }: MapViewProps) {
+function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPinDrop, onRefreshATMs, onRecenterMap, language }: MapViewProps) {
   const t = getTranslation(language);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -181,31 +181,35 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
 
     console.log('ATM markers useEffect triggered. atmLocations.length:', atmLocations.length);
 
-    // Don't clear markers if atmLocations is empty (prevents disappearing markers)
-    if (atmLocations.length === 0) {
-      console.log('Skipping marker update - atmLocations is empty');
-      return;
-    }
-
     // Check if atmLocations actually changed (not just reference)
-    // Always create markers if this is the first time (prevAtmLocationsRef is empty)
-    const hasChanged = prevAtmLocationsRef.current.length === 0 ||
-      atmLocations.length !== prevAtmLocationsRef.current.length ||
-      atmLocations.some((atm, idx) => atm.id !== prevAtmLocationsRef.current[idx]?.id);
+    const prevAtms = prevAtmLocationsRef.current;
+    const hasChanged = prevAtms.length === 0 ||
+      atmLocations.length !== prevAtms.length ||
+      atmLocations.some((atm, idx) => atm.id !== prevAtms[idx]?.id);
 
-    // Also check if markers are already created (for React Strict Mode double render)
+    // Check if markers are already created and data hasn't changed
     const markersAlreadyExist = atmMarkersRef.current.length === atmLocations.length;
 
-    if (!hasChanged && markersAlreadyExist) {
+    if (!hasChanged && markersAlreadyExist && atmMarkersRef.current.length > 0) {
       console.log('Skipping marker update - atmLocations content unchanged and markers exist');
       return;
     }
 
-    console.log('Clearing and recreating', atmLocations.length, 'ATM markers');
+    // Only clear if we need to recreate
+    if (atmMarkersRef.current.length > 0) {
+      console.log('Clearing existing ATM markers');
+      atmMarkersRef.current.forEach(marker => marker.remove());
+      atmMarkersRef.current = [];
+    }
 
-    // Remove existing ATM markers
-    atmMarkersRef.current.forEach(marker => marker.remove());
-    atmMarkersRef.current = [];
+    // Don't create markers if atmLocations is empty
+    if (atmLocations.length === 0) {
+      console.log('Skipping marker creation - atmLocations is empty');
+      prevAtmLocationsRef.current = atmLocations;
+      return;
+    }
+
+    console.log('Creating', atmLocations.length, 'ATM markers');
 
     // Create custom icon for ATM locations
     const atmIcon = L.divIcon({
@@ -323,3 +327,5 @@ export default function MapView({ userLocation, atmLocations, onATMClick, onLoca
     </div>
   );
 }
+
+export default memo(MapViewComponent);
