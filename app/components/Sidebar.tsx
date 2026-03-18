@@ -22,7 +22,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
     userName: '',
     comment: '',
     cashAvailable: true,
-    workingStatus: 'working' as 'working' | 'not_working' | 'partially_working' | 'accepting_own_bank'
+    workingStatus: 'working' as 'working' | 'not_working' | 'partially_working'
   });
 
   // Fetch reviews when ATM is selected
@@ -286,7 +286,6 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                     <option value="working">✅ {t.statusWorking}</option>
                     <option value="partially_working">⚠️ {t.statusPartial}</option>
                     <option value="not_working">❌ {t.statusNotWorking}</option>
-                    <option value="accepting_own_bank">🏦 {t.accptingOwnBank}</option>
                   </select>
                 </div>
 
@@ -335,7 +334,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-600">{t.noReviews}</p>
+                  <p className="text-sm text-gray-600">{t.last48HoursNote}</p>
                 </div>
               ) : (
                 reviews.map((review) => (

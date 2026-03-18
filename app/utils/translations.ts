@@ -51,7 +51,7 @@ export const translations = {
     
     // Review List
     noReviews: 'No reviews yet. Be the first to review!',
-    last48HoursNote: 'ℹShowing reviews from the last 48 hours only',
+    last48HoursNote: 'Showing reviews from the last 48 hours only',
     
     // Loading
     loadingMessage: 'Loading ATM locations...',
