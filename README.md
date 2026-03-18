@@ -18,6 +18,8 @@ A mobile-responsive web application that helps users find nearby ATM booths in B
 ## Scheenshorts
 <img width="2550" height="1259" alt="image" src="https://github.com/user-attachments/assets/959e5b9a-c09c-4c41-87d8-ff9145ad71db" />
 <img width="2559" height="1259" alt="image" src="https://github.com/user-attachments/assets/32084058-ceb5-4180-a77b-7b1ae6502506" />
+<img width="415" height="892" alt="image" src="https://github.com/user-attachments/assets/f8cd5df6-5384-42ac-9503-bc89fb9bc125" />
+
 
 
 
