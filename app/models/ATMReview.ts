@@ -6,7 +6,7 @@ export interface IATMReview extends Document {
   rating: number;
   comment: string;
   cashAvailable: boolean;
-  workingStatus: 'working' | 'not_working' | 'partially_working';
+  workingStatus: 'working' | 'not_working' | 'partially_working' | 'accepting_own_bank';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,7 +41,7 @@ const ATMReviewSchema: Schema = new Schema(
     },
     workingStatus: {
       type: String,
-      enum: ['working', 'not_working', 'partially_working'],
+      enum: ['working', 'not_working', 'partially_working', 'accepting_own_bank'],
       required: true,
     },
   },
