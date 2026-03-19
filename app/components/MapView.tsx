@@ -251,6 +251,15 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
 
       console.log(`Created marker ${index + 1}/${atmLocations.length} at [${atm.lat}, ${atm.lon}]`);
 
+      // Add tooltip for hover (desktop) and press-hold (mobile)
+      const tooltipText = atm.name || atm.operator || 'ATM';
+      marker.bindTooltip(tooltipText, {
+        direction: 'top',
+        offset: [0, -16],
+        opacity: 0.9,
+        className: 'atm-tooltip'
+      });
+
       // Create popup content
       const popupContent = `
         <div style="min-width: 150px;">
