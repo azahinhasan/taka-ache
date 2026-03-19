@@ -9,7 +9,7 @@ export const translations = {
     // Search
     searchPlaceholder: 'Search location...',
     searchButton: 'Search',
-    searching: 'Searching...',
+    searching: 'Searching',
     myLocationButton: 'My Location',
     searchExample: 'Try: "Dhaka" or coordinates like "23.8103, 90.4125"',
     
@@ -51,6 +51,7 @@ export const translations = {
     
     // Review List
     noReviews: 'No reviews yet. Be the first to review!',
+    noReviewWithin48Hours: 'No reviews within the last 48 hours',
     last48HoursNote: 'Showing reviews from the last 48 hours only',
     
     // Loading
@@ -81,7 +82,7 @@ export const translations = {
     // Search
     searchPlaceholder: 'অবস্থান খুঁজুন...',
     searchButton: 'খুঁজুন',
-    searching: 'খুঁজছি...',
+    searching: 'খুঁজছি',
     myLocationButton: 'আমার অবস্থান',
     searchExample: 'চেষ্টা করুন: "ঢাকা" অথবা স্থানাঙ্ক যেমন "23.8103, 90.4125"',
     
@@ -123,6 +124,7 @@ export const translations = {
     
     // Review List
     noReviews: 'এখনও কোনো রিভিউ নেই। প্রথম রিভিউ করুন!',
+    noReviewWithin48Hours: 'গত ৪৮ ঘন্টার মধ্যে কোনো রিভিউ নেই',
     last48HoursNote: 'শুধুমাত্র গত ৪৮ ঘন্টার রিভিউ দেখানো হচ্ছে',
     
     // Loading

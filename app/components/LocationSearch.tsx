@@ -102,13 +102,12 @@ export default function LocationSearch({ onSearch, isLoading, onMyLocation, lang
           <button
             onClick={handleSearch}
             disabled={isLoading || isSearching}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 text-sm font-medium"
+            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 text-sm font-medium"
           >
             {isSearching ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                 <span className="hidden md:inline">{t.searching}</span>
-                <span className="md:hidden">📍</span>
               </>
             ) : (
               <>

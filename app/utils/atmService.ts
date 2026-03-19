@@ -133,7 +133,6 @@ export async function fetchATMLocations(
     try {
       googleResults = await fetchFromGooglePlaces(lat, lon, radius);
       results.push(...googleResults);
-      console.log(`✓ Google Places API: Found ${googleResults.length} ATMs`);
     } catch (error) {
       console.warn('Google Places API failed, falling back to OpenStreetMap:', error);
     }
@@ -143,19 +142,16 @@ export async function fetchATMLocations(
       try {
         overpassResults = await fetchFromOverpass(lat, lon, radius);
         results.push(...overpassResults);
-        console.log(`✓ OpenStreetMap (fallback): Found ${overpassResults.length} ATMs/Banks`);
       } catch (error) {
         console.error('OpenStreetMap API also failed:', error);
         throw new Error('Both Google Places and OpenStreetMap APIs failed');
       }
     } else {
-      console.log(`ℹ️ Skipping OpenStreetMap - using Google Places data only`);
     }
 
     // Remove duplicates based on proximity (within 50 meters)
     const uniqueResults = removeDuplicates(results, 50);
 
-    console.log(`📍 Total unique ATM locations: ${uniqueResults.length} (${googleResults.length} from Google, ${overpassResults.length} from OSM, ${results.length - uniqueResults.length} duplicates removed)`);
 
     if (uniqueResults.length === 0) {
       throw new Error('No ATM locations found in this area');

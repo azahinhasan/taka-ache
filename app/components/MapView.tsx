@@ -30,8 +30,14 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
+    // Check if the container already has a Leaflet map (React Strict Mode double-render)
+    const container = mapContainerRef.current;
+    if ((container as any)._leaflet_id) {
+      return;
+    }
+
     // Create map centered on Bangladesh
-    const map = L.map(mapContainerRef.current, {
+    const map = L.map(container, {
       center: [23.8103, 90.4125], // Dhaka, Bangladesh
       zoom: 13,
       zoomControl: true,
@@ -125,6 +131,14 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
         mapRef.current.remove();
         mapRef.current = null;
       }
+      // Clear Leaflet container ID to allow re-initialization
+      if (container) {
+        delete (container as any)._leaflet_id;
+      }
+      // Reset marker refs
+      userMarkerRef.current = null;
+      atmMarkersRef.current = [];
+      customPinRef.current = null;
     };
   }, [onLocationPinDrop]);
 
@@ -182,7 +196,6 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
     marker.bindPopup('<b>Your Location</b>');
     userMarkerRef.current = marker;
 
-    console.log('User marker created at:', userLocation.lat, userLocation.lon);
 
     // Only center on first load, not when user location updates
     if (!boundsSetRef.current) {
@@ -194,8 +207,6 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
   useEffect(() => {
     if (!mapRef.current) return;
 
-    console.log('ATM markers useEffect triggered. atmLocations.length:', atmLocations.length);
-
     // Check if atmLocations actually changed (not just reference)
     const prevAtms = prevAtmLocationsRef.current;
     const hasChanged = prevAtms.length === 0 ||
@@ -206,25 +217,21 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
     const markersAlreadyExist = atmMarkersRef.current.length === atmLocations.length;
 
     if (!hasChanged && markersAlreadyExist && atmMarkersRef.current.length > 0) {
-      console.log('Skipping marker update - atmLocations content unchanged and markers exist');
       return;
     }
 
     // Only clear if we need to recreate
     if (atmMarkersRef.current.length > 0) {
-      console.log('Clearing existing ATM markers');
       atmMarkersRef.current.forEach(marker => marker.remove());
       atmMarkersRef.current = [];
     }
 
     // Don't create markers if atmLocations is empty
     if (atmLocations.length === 0) {
-      console.log('Skipping marker creation - atmLocations is empty');
       prevAtmLocationsRef.current = atmLocations;
       return;
     }
 
-    console.log('Creating', atmLocations.length, 'ATM markers');
 
     // Add ATM markers with color-coded status
     atmLocations.forEach((atm, index) => {
@@ -249,7 +256,6 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
         zIndexOffset: 100,
       }).addTo(mapRef.current!);
 
-      console.log(`Created marker ${index + 1}/${atmLocations.length} at [${atm.lat}, ${atm.lon}]`);
 
       // Add tooltip for hover (desktop) and press-hold (mobile)
       const tooltipText = atm.name || atm.operator || 'ATM';
@@ -286,12 +292,10 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
       atmMarkersRef.current.push(marker);
     });
 
-    console.log(`Total markers in atmMarkersRef: ${atmMarkersRef.current.length}`);
 
     // Update the previous reference AFTER markers are created
     // This prevents React Strict Mode double-render from skipping marker creation
     prevAtmLocationsRef.current = atmLocations;
-    console.log('Markers created and reference updated');
 
     // Only fit bounds on initial load, not on subsequent searches
     // This prevents auto zoom-out when clicking ATMs after searching

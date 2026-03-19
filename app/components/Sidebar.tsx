@@ -335,7 +335,7 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                 </div>
               ) : reviews.length === 0 ? (
                 <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-600">{t.last48HoursNote}</p>
+                  <p className="text-sm text-gray-600">{t.noReviewWithin48Hours}</p>
                 </div>
               ) : (
                 reviews.map((review) => (
