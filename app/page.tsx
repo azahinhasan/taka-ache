@@ -142,7 +142,6 @@ export default function Home() {
       const atms = await fetchATMLocations(lat, lon, 1000, googleApiKey);
       setAtmLocations(atms);
 
-      console.log(`✓ Searched location: ${locationName}`);
     } catch (err) {
       console.error("Error fetching ATMs at custom location:", err);
       setError(
@@ -176,9 +175,6 @@ export default function Home() {
       );
       setAtmLocations(atms);
 
-      console.log(
-        `✓ Searched pinned location: ${pinnedLocation.lat}, ${pinnedLocation.lon}`,
-      );
       setPinnedLocation(null);
     } catch (err) {
       console.error("Error fetching ATMs at pinned location:", err);
@@ -210,7 +206,6 @@ export default function Home() {
         googleApiKey,
       );
       setAtmLocations(atms);
-      console.log(`✓ Refreshed ATMs at current location`);
     } catch (err) {
       console.error("Error refreshing ATMs:", err);
       // If getting fresh location fails, use existing location
