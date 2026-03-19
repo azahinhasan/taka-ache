@@ -16,7 +16,7 @@ A mobile-responsive web application that helps users find nearby ATM booths in B
 - **Smart Deduplication**: Automatically removes duplicate ATMs from multiple sources
 
 ## Scheenshorts
-<img width="2558" height="1268" alt="image" src="https://github.com/user-attachments/assets/a776678e-666f-4a88-a203-e737425c57d8" />
+<img width="1915" height="910" alt="image" src="https://github.com/user-attachments/assets/712c2393-4d49-4e81-9247-76616139bc7c" />
 <img width="2555" height="1267" alt="image" src="https://github.com/user-attachments/assets/5d1bea14-9c0a-489f-bbad-329ff60b9d80" />
 <img width="423" height="903" alt="image" src="https://github.com/user-attachments/assets/1ae1289e-f44f-4762-bd8b-d175280dfa84" />
 
