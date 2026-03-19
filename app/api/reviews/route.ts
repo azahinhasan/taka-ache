@@ -114,14 +114,23 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
 
-    const review = await ATMReview.create({
+    const reviewData: any = {
       atmId,
       userName: userName.trim(),
-      rating,
-      comment: comment.trim(),
       cashAvailable,
       workingStatus,
-    });
+    };
+
+    // Only add optional fields if they have values
+    if (rating !== undefined) {
+      reviewData.rating = rating;
+    }
+    
+    if (comment && comment.trim()) {
+      reviewData.comment = comment.trim();
+    }
+
+    const review = await ATMReview.create(reviewData);
 
     return NextResponse.json({
       success: true,

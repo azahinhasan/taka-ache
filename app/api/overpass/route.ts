@@ -41,10 +41,6 @@ export async function GET(request: NextRequest) {
         node["amenity"="atm"](${south},${west},${north},${east});
         way["amenity"="atm"](${south},${west},${north},${east});
         relation["amenity"="atm"](${south},${west},${north},${east});
-        node["amenity"="bank"]["atm"="yes"](${south},${west},${north},${east});
-        way["amenity"="bank"]["atm"="yes"](${south},${west},${north},${east});
-        node["amenity"="bank"](${south},${west},${north},${east});
-        way["amenity"="bank"](${south},${west},${north},${east});
       );
       out center;
     `;

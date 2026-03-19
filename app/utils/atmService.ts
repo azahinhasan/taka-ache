@@ -1,10 +1,10 @@
 // Service for fetching ATM data from multiple sources
 
-import { ATMLocation, OverpassResponse } from '../types/atm';
+import { ATMLocation, OverpassResponse } from "../types/atm";
 
 /**
- * Fetches ATM locations from Overpass API with enhanced query
- * Includes ATMs, banks, and financial institutions
+ * Fetches ATM locations from Overpass API
+ * Only includes standalone ATM amenities
  * @param lat - Center latitude
  * @param lon - Center longitude
  * @param radius - Search radius in meters (default: 1000m = 5km)
@@ -13,11 +13,11 @@ import { ATMLocation, OverpassResponse } from '../types/atm';
 async function fetchFromOverpass(
   lat: number,
   lon: number,
-  radius: number = 1000
+  radius: number = 1000,
 ): Promise<ATMLocation[]> {
   try {
-    // Use backend API route to hide external URL
-    const url = `/api/overpass?lat=${lat}&lon=${lon}&radius=${radius}`;
+    // Use backend API route with source=osm parameter
+    const url = `/api/atm?lat=${lat}&lon=${lon}&radius=${radius}&source=osm`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -33,33 +33,32 @@ async function fetchFromOverpass(
       const longitude = element.lon || element.center?.lon || 0;
 
       // Build address from available tags
-      let address = '';
-      if (element.tags?.['addr:street']) {
-        address = element.tags['addr:street'];
-        if (element.tags['addr:city']) {
-          address += `, ${element.tags['addr:city']}`;
+      let address = "";
+      if (element.tags?.["addr:street"]) {
+        address = element.tags["addr:street"];
+        if (element.tags["addr:city"]) {
+          address += `, ${element.tags["addr:city"]}`;
         }
       }
-
-      // Determine if it's a bank or ATM
-      const isBank = element.tags?.amenity === 'bank';
-      const hasAtm = element.tags?.atm === 'yes';
-
       return {
         id: `osm-${element.id}`,
         lat: latitude,
         lon: longitude,
-        name: element.tags?.name || (isBank ? 'Bank Branch' : undefined),
+        name: element.tags?.operator
+          ? `${element.tags.operator} ATM`
+          : element.tags?.brand
+            ? `${element.tags.brand} ATM`
+            : "ATM",
         operator: element.tags?.operator || element.tags?.brand,
         address: address || undefined,
-        source: 'openstreetmap',
-        statusFlag: (element as any).statusFlag || 'green',
+        source: "openstreetmap",
+        statusFlag: (element as any).statusFlag || "green" // statusFlag comes from API
       };
     });
 
     return atmLocations;
   } catch (error) {
-    console.error('Error fetching from Overpass:', error);
+    console.error("Error fetching from Overpass:", error);
     throw error;
   }
 }
@@ -75,14 +74,14 @@ async function fetchFromOverpass(
 async function fetchFromGooglePlaces(
   lat: number,
   lon: number,
-  radius: number
+  radius: number,
 ): Promise<ATMLocation[]> {
   try {
     // Call our Next.js API route instead of Google directly (avoids CORS)
     const url = `/api/atm?lat=${lat}&lon=${lon}&radius=${radius}`;
-    
+
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`API error: ${errorData.error || response.status}`);
@@ -90,7 +89,7 @@ async function fetchFromGooglePlaces(
 
     const data = await response.json();
 
-    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+    if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
       throw new Error(`Google Places API status: ${data.status}`);
     }
 
@@ -101,11 +100,11 @@ async function fetchFromGooglePlaces(
       name: place.name,
       operator: place.name,
       address: place.vicinity,
-      source: 'google',
-      statusFlag: place.statusFlag || 'green',
+      source: "google",
+      statusFlag: place.statusFlag || "green",
     }));
   } catch (error) {
-    console.error('Error fetching from Google Places:', error);
+    console.error("Error fetching from Google Places:", error);
     return [];
   }
 }
@@ -122,7 +121,7 @@ export async function fetchATMLocations(
   lat: number,
   lon: number,
   radius: number = 1000,
-  googleApiKey?: string
+  googleApiKey?: string,
 ): Promise<ATMLocation[]> {
   try {
     let results: ATMLocation[] = [];
@@ -134,17 +133,20 @@ export async function fetchATMLocations(
       googleResults = await fetchFromGooglePlaces(lat, lon, radius);
       results.push(...googleResults);
     } catch (error) {
-      console.warn('Google Places API failed, falling back to OpenStreetMap:', error);
+      console.warn(
+        "Google Places API failed, falling back to OpenStreetMap:",
+        error,
+      );
     }
 
     // Fallback: Only use OpenStreetMap if Google Places failed or returned no results
-    if (googleResults.length === 0) {
+    if (googleResults.length == 0) {
       try {
         overpassResults = await fetchFromOverpass(lat, lon, radius);
         results.push(...overpassResults);
       } catch (error) {
-        console.error('OpenStreetMap API also failed:', error);
-        throw new Error('Both Google Places and OpenStreetMap APIs failed');
+        console.error("OpenStreetMap API also failed:", error);
+        throw new Error("Both Google Places and OpenStreetMap APIs failed");
       }
     } else {
     }
@@ -152,14 +154,13 @@ export async function fetchATMLocations(
     // Remove duplicates based on proximity (within 50 meters)
     const uniqueResults = removeDuplicates(results, 50);
 
-
     if (uniqueResults.length === 0) {
-      throw new Error('No ATM locations found in this area');
+      throw new Error("No ATM locations found in this area");
     }
 
     return uniqueResults;
   } catch (error) {
-    console.error('Error fetching ATM locations:', error);
+    console.error("Error fetching ATM locations:", error);
     throw error;
   }
 }
@@ -170,16 +171,19 @@ export async function fetchATMLocations(
  * @param thresholdMeters - Distance threshold in meters
  * @returns Array of unique ATM locations
  */
-function removeDuplicates(locations: ATMLocation[], thresholdMeters: number): ATMLocation[] {
+function removeDuplicates(
+  locations: ATMLocation[],
+  thresholdMeters: number,
+): ATMLocation[] {
   const unique: ATMLocation[] = [];
 
   for (const location of locations) {
-    const isDuplicate = unique.some(existing => {
+    const isDuplicate = unique.some((existing) => {
       const distance = calculateDistance(
         location.lat,
         location.lon,
         existing.lat,
-        existing.lon
+        existing.lon,
       );
       return distance < thresholdMeters;
     });
@@ -200,16 +204,21 @@ function removeDuplicates(locations: ATMLocation[], thresholdMeters: number): AT
  * @param lon2 - Longitude of second point
  * @returns Distance in meters
  */
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+function calculateDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+): number {
   const R = 6371e3; // Earth's radius in meters
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c;
@@ -222,7 +231,7 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 export function getUserLocation(): Promise<{ lat: number; lon: number }> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by your browser'));
+      reject(new Error("Geolocation is not supported by your browser"));
       return;
     }
 
@@ -240,7 +249,7 @@ export function getUserLocation(): Promise<{ lat: number; lon: number }> {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 0,
-      }
+      },
     );
   });
 }

@@ -53,7 +53,11 @@ const ATMReviewSchema: Schema = new Schema(
 // Create index for faster queries
 ATMReviewSchema.index({ atmId: 1, createdAt: -1 });
 
-const ATMReview: Model<IATMReview> =
-  mongoose.models.ATMReview || mongoose.model<IATMReview>('ATMReview', ATMReviewSchema);
+// Delete cached model to ensure schema changes are applied
+if (mongoose.models.ATMReview) {
+  delete mongoose.models.ATMReview;
+}
+
+const ATMReview: Model<IATMReview> = mongoose.model<IATMReview>('ATMReview', ATMReviewSchema);
 
 export default ATMReview;
