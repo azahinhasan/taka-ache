@@ -113,8 +113,8 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
       {/* Sidebar panel */}
       <div className="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto" style={{ zIndex: 9999 }}>
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3 flex justify-between items-center shadow-md">
-          <h2 className="text-lg font-bold">{t.atmDetails}</h2>
+        <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-5 flex justify-between items-center shadow-md">
+          <h2 className="text-xl font-bold">{t.atmDetails}</h2>
           <button 
             onClick={onClose}
             className="text-white hover:bg-blue-800 rounded-full p-2 transition-colors"
@@ -207,7 +207,41 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
           {/* Reviews Section */}
           <div className="border-t border-gray-200 pt-3">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-gray-900">{t.reviewsTitle}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-gray-900">{t.reviewsTitle}</h3>
+                {/* Status Info Icon with Tooltip */}
+                <div className="relative group">
+                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 hover:bg-blue-600 transition-all duration-200 cursor-help group-hover:scale-110">
+                    <svg 
+                      className="w-3 h-3 text-blue-600 group-hover:text-white transition-colors" 
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-7 w-72 bg-gradient-to-br from-gray-900 to-gray-800 text-white text-xs rounded-xl p-4 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-700">
+                    <p className="font-bold mb-3 text-sm text-blue-300">{t.statusInfo}</p>
+                    <div className="space-y-2.5">
+                      <div className="flex items-center gap-3 bg-white/10 rounded-lg p-2 hover:bg-white/20 transition-colors">
+                        <div className="w-4 h-4 rounded-full bg-emerald-500 flex-shrink-0 shadow-lg shadow-emerald-500/50"></div>
+                        <p className="leading-relaxed">{t.statusGreen}</p>
+                      </div>
+                      <div className="flex items-center gap-3 bg-white/10 rounded-lg p-2 hover:bg-white/20 transition-colors">
+                        <div className="w-4 h-4 rounded-full bg-orange-500 flex-shrink-0 shadow-lg shadow-orange-500/50"></div>
+                        <p className="leading-relaxed">{t.statusOrange}</p>
+                      </div>
+                      <div className="flex items-center gap-3 bg-white/10 rounded-lg p-2 hover:bg-white/20 transition-colors">
+                        <div className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0 shadow-lg shadow-red-500/50"></div>
+                        <p className="leading-relaxed">{t.statusRed}</p>
+                      </div>
+                    </div>
+                    {/* Tooltip Arrow */}
+                    <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 w-3 h-3 bg-gray-900 transform rotate-45 border-l border-t border-gray-700"></div>
+                  </div>
+                </div>
+              </div>
               <button
                 onClick={() => setShowReviewForm(!showReviewForm)}
                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors"

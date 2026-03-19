@@ -25,6 +25,10 @@ export const translations = {
     coordinates: 'Coordinates',
     navigateButton: 'Navigate with Google Maps',
     reviewsTitle: 'Reviews & Status',
+    statusInfo: 'ATM Status Colors',
+    statusGreen: 'Green: Working fine with cash available',
+    statusOrange: 'Orange: Has issues (partially working, accepting own bank only)',
+    statusRed: 'Red: Not working or no cash available',
     writeReview: 'Write Review',
     cancel: 'Cancel',
     
@@ -99,6 +103,10 @@ export const translations = {
     coordinates: 'স্থানাঙ্ক',
     navigateButton: 'গুগল ম্যাপে নেভিগেট করুন',
     reviewsTitle: 'রিভিউ এবং অবস্থা',
+    statusInfo: 'এটিএম স্ট্যাটাস রং',
+    statusGreen: 'সবুজ: ভালোভাবে কাজ করছে এবং টাকা আছে',
+    statusOrange: 'কমলা: সমস্যা আছে (আংশিক কার্যকর, শুধু নিজের ব্যাংক গ্রহণ করছে)',
+    statusRed: 'লাল: কাজ করছে না বা টাকা নেই',
     writeReview: 'রিভিউ লিখুন',
     cancel: 'বাতিল',
     
