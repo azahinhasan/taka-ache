@@ -31,7 +31,7 @@ const ATMReviewSchema: Schema = new Schema(
     },
     comment: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       maxlength: 500,
     },

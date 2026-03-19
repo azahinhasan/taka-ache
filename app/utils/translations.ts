@@ -38,6 +38,7 @@ export const translations = {
     warningMessage: 'This is a helpful website to assist others in finding working ATMs. Please do not provide false or misleading information. Your honest review helps the community!',
     yourName: 'Your Name',
     namePlaceholder: 'Enter your name',
+    optional: 'optional',
     workingStatus: 'Working Status',
     statusWorking: 'Working',
     statusPartial: 'Partially Working',
@@ -108,9 +109,10 @@ export const translations = {
     
     // Review Form
     warningTitle: 'সঠিক তথ্য প্রদান করুন',
-    warningMessage: 'এটি একটি সহায়ক ওয়েবসাইট যা অন্যদের কার্যকর এটিএম খুঁজে পেতে সাহায্য করে। মিথ্যা বা বিভ্রান্তিকর তথ্য প্রদান করবেন না। আপনার সৎ রিভিউ সম্প্রদায়কে সাহায্য করে!',
+    warningMessage: 'এটি একটি সহায়ক ওয়েবসাইট যা অন্যদের কার্যকর এটিএম খুঁজে পেতে সাহায্য করে। মিথ্যা বা বিভ্রান্তিকর তথ্য প্রদান করবেন না। আপনার সৎ রিভিউ সবাইকে সাহায্য করে!',
     yourName: 'আপনার নাম',
     namePlaceholder: 'আপনার নাম লিখুন',
+    optional: 'ঐচ্ছিক',
     workingStatus: 'কার্যকর অবস্থা',
     statusWorking: 'কার্যকর',
     statusPartial: 'আংশিক কার্যকর',

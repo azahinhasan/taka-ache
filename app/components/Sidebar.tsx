@@ -303,9 +303,10 @@ export default function Sidebar({ selectedATM, userLocation, onClose, language }
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">{t.comment}</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    {t.comment} <span className="text-gray-400 font-normal">({t.optional})</span>
+                  </label>
                   <textarea
-                    required
                     value={formData.comment}
                     onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                     className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-900"

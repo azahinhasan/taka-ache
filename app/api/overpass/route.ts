@@ -70,13 +70,13 @@ export async function GET(request: NextRequest) {
     
     // Enrich ATM data with status flags based on 48-hour reviews
     if (data.elements && Array.isArray(data.elements)) {
-      const atmIds = data.elements.map((element: any) => `osm_${element.id}`);
+      const atmIds = data.elements.map((element: any) => `osm-${element.id}`);
       const statusMap = await getATMStatusFlags(atmIds);
 
       // Add statusFlag to each element
       data.elements = data.elements.map((element: any) => ({
         ...element,
-        statusFlag: statusMap.get(`osm_${element.id}`) || 'green'
+        statusFlag: statusMap.get(`osm-${element.id}`) || 'green'
       }));
     }
     

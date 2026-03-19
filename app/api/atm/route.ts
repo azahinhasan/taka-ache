@@ -47,13 +47,13 @@ export async function GET(request: NextRequest) {
 
     // Enrich ATM data with status flags based on 48-hour reviews
     if (data.results && Array.isArray(data.results)) {
-      const atmIds = data.results.map((atm: any) => atm.place_id);
+      const atmIds = data.results.map((atm: any) => `google-${atm.place_id}`);
       const statusMap = await getATMStatusFlags(atmIds);
 
       // Add statusFlag to each ATM
       data.results = data.results.map((atm: any) => ({
         ...atm,
-        statusFlag: statusMap.get(atm.place_id) || 'green' // Default to green if no reviews
+        statusFlag: statusMap.get(`google-${atm.place_id}`) || 'green' // Default to green if no reviews
       }));
     }
 

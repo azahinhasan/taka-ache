@@ -84,9 +84,9 @@ export async function POST(request: NextRequest) {
     const { atmId, userName, rating, comment, cashAvailable, workingStatus } = body;
 
     // Validation
-    if (!atmId || !userName || !comment || cashAvailable === undefined || !workingStatus) {
+    if (!atmId || !userName || cashAvailable === undefined || !workingStatus) {
       return NextResponse.json(
-        { error: 'Required fields: atmId, userName, comment, cashAvailable, workingStatus' },
+        { error: 'Required fields: atmId, userName, cashAvailable, workingStatus' },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (comment.length > 500) {
+    if (comment && comment.length > 500) {
       return NextResponse.json(
         { error: 'Comment must be 500 characters or less' },
         { status: 400, headers: corsHeaders }
