@@ -53,6 +53,7 @@ async function fetchFromOverpass(
         operator: element.tags?.operator || element.tags?.brand,
         address: address || undefined,
         source: 'openstreetmap',
+        statusFlag: (element as any).statusFlag || 'green',
       };
     });
 
@@ -101,6 +102,7 @@ async function fetchFromGooglePlaces(
       operator: place.name,
       address: place.vicinity,
       source: 'google',
+      statusFlag: place.statusFlag || 'green',
     }));
   } catch (error) {
     console.error('Error fetching from Google Places:', error);

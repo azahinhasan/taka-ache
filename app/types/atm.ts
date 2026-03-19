@@ -8,6 +8,7 @@ export interface ATMLocation {
   operator?: string;
   address?: string;
   source?: 'google' | 'openstreetmap';
+  statusFlag?: 'green' | 'orange' | 'red'; // Based on 48hr reviews: green=working, orange=issues, red=not working
 }
 
 export interface UserLocation {

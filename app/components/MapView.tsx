@@ -226,16 +226,24 @@ function MapViewComponent({ userLocation, atmLocations, onATMClick, onLocationPi
 
     console.log('Creating', atmLocations.length, 'ATM markers');
 
-    // Create custom icon for ATM locations
-    const atmIcon = L.divIcon({
-      className: 'custom-atm-marker',
-      html: `<div style="width: 32px; height: 32px; background-color: #10b981; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px;">$</div>`,
-      iconSize: [32, 32],
-      iconAnchor: [16, 16],
-    });
-
-    // Add ATM markers
+    // Add ATM markers with color-coded status
     atmLocations.forEach((atm, index) => {
+      // Determine marker color based on statusFlag
+      const statusColors = {
+        green: '#10b981',  // Emerald green - Working fine
+        orange: '#f97316', // Orange - Has issues (partially working, accepting own bank, etc.)
+        red: '#ef4444'     // Red - Not working or no cash
+      };
+      const markerColor = statusColors[atm.statusFlag || 'green'];
+
+      // Create custom icon with dynamic color
+      const atmIcon = L.divIcon({
+        className: 'custom-atm-marker',
+        html: `<div style="width: 32px; height: 32px; background-color: ${markerColor}; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px;">$</div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+
       const marker = L.marker([atm.lat, atm.lon], {
         icon: atmIcon,
         zIndexOffset: 100,

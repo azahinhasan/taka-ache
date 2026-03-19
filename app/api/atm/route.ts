@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleCors, getCorsHeaders } from '@/app/lib/cors';
+import { getATMStatusFlags } from '@/app/lib/atmStatus';
 
 export async function GET(request: NextRequest) {
   // Handle CORS preflight
@@ -42,6 +43,18 @@ export async function GET(request: NextRequest) {
         { error: 'Google Places API request failed', details: data },
         { status: response.status, headers: corsHeaders }
       );
+    }
+
+    // Enrich ATM data with status flags based on 48-hour reviews
+    if (data.results && Array.isArray(data.results)) {
+      const atmIds = data.results.map((atm: any) => atm.place_id);
+      const statusMap = await getATMStatusFlags(atmIds);
+
+      // Add statusFlag to each ATM
+      data.results = data.results.map((atm: any) => ({
+        ...atm,
+        statusFlag: statusMap.get(atm.place_id) || 'green' // Default to green if no reviews
+      }));
     }
 
     return NextResponse.json(data, { headers: corsHeaders });
